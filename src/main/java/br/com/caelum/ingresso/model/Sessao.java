@@ -89,4 +89,12 @@ public class Sessao {
 		return sala.getMapaDeLugares();
 	}
 
+	public Set<Ingresso> getIngressos() {
+		return ingressos;
+	}
+
+	public void setIngressos(Set<Ingresso> ingressos) {
+		this.ingressos = ingressos;
+	}
+
 }
