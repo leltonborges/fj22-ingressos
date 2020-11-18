@@ -9,9 +9,9 @@ import org.springframework.web.context.annotation.SessionScope;
 @Component
 @SessionScope
 public class Carrinho {
-	
+
 	private List<Ingresso> ingressos = new ArrayList<Ingresso>();
-	
+
 	public void add(Ingresso ingresso) {
 		this.ingressos.add(ingresso);
 	}
@@ -22,5 +22,10 @@ public class Carrinho {
 
 	public void setIngressos(List<Ingresso> ingressos) {
 		this.ingressos = ingressos;
+	}
+
+	public boolean isSelecionado(Lugar lugar) {
+		return this.ingressos.stream().map(Ingresso::getLugar)
+				.anyMatch(lugarSelecionado -> lugarSelecionado.equals(lugar));
 	}
 }
