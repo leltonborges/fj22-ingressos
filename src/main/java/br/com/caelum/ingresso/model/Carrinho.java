@@ -23,6 +23,14 @@ public class Carrinho {
 				.reduce(BigDecimal::add)
 				.orElse(BigDecimal.ZERO);
 	}
+	
+	public Compra toCompra() {
+		return new Compra(ingressos);
+	}
+	
+	public void limpa() {
+		this.ingressos.clear();
+	}
 
 	public List<Ingresso> getIngressos() {
 		return ingressos;
