@@ -3,68 +3,46 @@ package br.com.caelum.ingresso.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-
 import org.springframework.security.core.GrantedAuthority;
 
-@Entity
-public class Permissao implements GrantedAuthority {
-	private static final long serialVersionUID = 1L;
+public enum Permissao implements GrantedAuthority {
+	CLIENT(1, "ROLE_COMPRADOR"), SUPERVISOR(2, "ROLE_SUPERVISOR"), GERENTE(3, "ROLE_GERENTE"), ADMIN(4, "ROLE_ADMIN");
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
-
-	@Column(unique = true)
+	private Integer code;
 	private String nome;
 
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "Usuario_Permissao", 
-		joinColumns = { @JoinColumn(name = "Permissao_Id") }, 
-		inverseJoinColumns = { @JoinColumn(name = "Usuario_Id") })
-	private Set<Usuario> usuarios = new HashSet<Usuario>();
-
-	public Permissao(String nome) {
+	private Permissao(Integer code, String nome) {
+		this.code = code;
 		this.nome = nome;
 	}
 
-	public Permissao() {
+	@Override
+	public String getAuthority() {
+		return this.nome;
 	}
 
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
+	public Integer getCode() {
+		return code;
 	}
 
 	public String getNome() {
 		return nome;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public static Permissao toPermisao(Integer code) {
+		for (Permissao p : Permissao.values()) {
+			if (p.getCode().equals(code)) {
+				return p;
+			}
+		}
+		throw new IllegalArgumentException("Code não encontrodo " + code);
 	}
 
-	public Set<Usuario> getUsuarios() {
-		return usuarios;
-	}
-
-	public void setUsuarios(Set<Usuario> usuarios) {
-		this.usuarios = usuarios;
-	}
-
-	@Override
-	public String getAuthority() {
-		return this.nome;
+	public static Set<Permissao> listaPermissoes(Set<Integer> codes) {
+		Set<Permissao> list = new HashSet<Permissao>();
+		for (Integer i : codes) {
+			list.add(toPermisao(i));
+		}
+		return list;
 	}
 }

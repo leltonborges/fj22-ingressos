@@ -4,13 +4,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,15 +26,19 @@ public class Usuario implements UserDetails{
 	private String email;
 	private String password;
 	
-	@ManyToMany(mappedBy = "usuarios", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private Set<Permissao> permissoes = new HashSet<Permissao>();
+
+	@CollectionTable(name = "Permissao")
+	@ElementCollection(fetch = FetchType.EAGER)
+	private Set<Integer> permissoes = new HashSet<Integer>();
 	
-	public Usuario() {}
+	public Usuario() {
+		this.addPermissao(Permissao.CLIENT);
+	}
 	
-	public Usuario(String email, String password, Set<Permissao> permissoes) {
+	public Usuario(String email, String password) {
 		this.email = email;
 		this.password = password;
-		this.permissoes = permissoes;
+		this.addPermissao(Permissao.CLIENT);
 	}
 
 	public Integer getId() {
@@ -62,17 +66,10 @@ public class Usuario implements UserDetails{
 		this.password = password;
 	}
 
-	public Set<Permissao> getPermissoes() {
-		return permissoes;
-	}
-
-	public void setPermissoes(Set<Permissao> permissoes) {
-		this.permissoes = permissoes;
-	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return this.permissoes;
+		return Permissao.listaPermissoes(this.permissoes);
 	}
 
 	@Override
@@ -99,12 +96,8 @@ public class Usuario implements UserDetails{
 	public boolean isEnabled() {
 		return true;
 	}
-
-	@Override
-	public String toString() {
-		return "Usuario [id=" + id + ", email=" + email + ", password=" + password + ", permissoes=" + permissoes + "]";
+	
+	public void addPermissao(Permissao permissao) {
+		this.permissoes.add(permissao.getCode());
 	}
-	
-	
-
 }

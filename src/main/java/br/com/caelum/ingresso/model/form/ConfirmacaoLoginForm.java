@@ -56,6 +56,7 @@ public class ConfirmacaoLoginForm {
 		String encriptedPassword = encoder.encode(this.password);
 		String email = token.getEmail();
 		Usuario usuario = usuarioDao.findByEmail(email).orElse(novoUsuario(email, encriptedPassword));
+		usuario.addPermissao(Permissao.ADMIN);
 		usuario.setPassword(encriptedPassword);
 		
 		return usuario;
@@ -63,7 +64,8 @@ public class ConfirmacaoLoginForm {
 	
 	private Usuario novoUsuario(String email, String password) {
 		Set<Permissao> permissoes = new HashSet<Permissao>();
-		permissoes.add(new Permissao("COMPRADOR"));
-		return new Usuario(email, password, permissoes);
+//		permissoes.add(new Permissao("COMPRADOR"));
+//		return new Usuario(email, password, permissoes);
+		return new Usuario(email, password);
 	}
 }

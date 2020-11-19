@@ -28,8 +28,6 @@ public class UsuarioController {
 	private TokenHelper tokenHelper;
 	@Autowired
 	private UsuarioDao usuarioDao;
-	@Autowired
-	private PermissaoDao permissaoDao;
 
 	@GetMapping("/usuario/request")
 	public ModelAndView formSolicitacaoDeAcesso() {
@@ -77,8 +75,6 @@ public class UsuarioController {
 		if(form.isValid()) {
 			System.out.println("form: "+ form);
 			Usuario usuario = form.toUsuario(this.usuarioDao);
-			
-			this.permissaoDao.saveAll(usuario.getPermissoes());
 			
 			this.usuarioDao.save(usuario);
 		}
