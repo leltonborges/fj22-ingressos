@@ -11,9 +11,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.caelum.ingresso.auth.Token;
+import br.com.caelum.ingresso.dao.PermissaoDao;
+import br.com.caelum.ingresso.dao.UsuarioDao;
 import br.com.caelum.ingresso.helper.TokenHelper;
 import br.com.caelum.ingresso.mail.EmailNovoUsuario;
 import br.com.caelum.ingresso.mail.Mailer;
+import br.com.caelum.ingresso.model.Usuario;
 import br.com.caelum.ingresso.model.form.ConfirmacaoLoginForm;
 
 @Controller
@@ -23,6 +26,10 @@ public class UsuarioController {
 	private Mailer mailer;
 	@Autowired
 	private TokenHelper tokenHelper;
+	@Autowired
+	private UsuarioDao usuarioDao;
+	@Autowired
+	private PermissaoDao permissaoDao;
 
 	@GetMapping("/usuario/request")
 	public ModelAndView formSolicitacaoDeAcesso() {
@@ -33,10 +40,13 @@ public class UsuarioController {
 	@Transactional
 	public ModelAndView solicitacaoDeAcesso(String email) {
 		ModelAndView modelAndView = new ModelAndView("usuario/adicionado");
-
+		
 		Token token = tokenHelper.generateFrom(email);
 		mailer.send(new EmailNovoUsuario(token));
+		modelAndView.addObject("email", email);
+		
 		return modelAndView;
+		
 	}
 
 	@GetMapping("/usuario/validate")
@@ -57,5 +67,23 @@ public class UsuarioController {
 		view.addObject("confirmacaoLoginForm", confirmacaoLoginForm);
 		
 		return view;
+	}
+	
+	@PostMapping("/usuario/cadastrar")
+	@Transactional
+	public ModelAndView cadastrarUsuario(ConfirmacaoLoginForm form) {
+		ModelAndView modelAndView = new ModelAndView("redirect:/login");
+		
+		if(form.isValid()) {
+			System.out.println("form: "+ form);
+			Usuario usuario = form.toUsuario(this.usuarioDao);
+			
+			this.permissaoDao.saveAll(usuario.getPermissoes());
+			
+			this.usuarioDao.save(usuario);
+		}
+		modelAndView.addObject("msg", "O token do link utilizado não foi encontrado!");
+		
+		return modelAndView;
 	}
 }

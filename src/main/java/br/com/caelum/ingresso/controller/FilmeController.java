@@ -60,9 +60,7 @@ public class FilmeController {
 		}
 
 		filmeDao.save(filme);
-
 		ModelAndView view = new ModelAndView("redirect:/admin/filmes");
-
 		return view;
 	}
 

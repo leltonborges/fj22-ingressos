@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -25,7 +26,7 @@ public class Usuario implements UserDetails{
 	private String email;
 	private String password;
 	
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(mappedBy = "usuarios", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<Permissao> permissoes = new HashSet<Permissao>();
 	
 	public Usuario() {}
@@ -98,5 +99,12 @@ public class Usuario implements UserDetails{
 	public boolean isEnabled() {
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "Usuario [id=" + id + ", email=" + email + ", password=" + password + ", permissoes=" + permissoes + "]";
+	}
+	
+	
 
 }
