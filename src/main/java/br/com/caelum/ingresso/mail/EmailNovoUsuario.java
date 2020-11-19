@@ -22,6 +22,7 @@ public class EmailNovoUsuario implements Email{
 		sb.append("<h2> Bem Vindo <h2>");
 		sb.append(String.format("Acesso o <a href=%s>link</a> para criar seu login no sistema de ingressos",
 				this.makeUrl()	));
+		sb.append("</body>");
 		return sb.toString();
 	}
 
