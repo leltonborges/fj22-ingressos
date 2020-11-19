@@ -1,6 +1,9 @@
 package br.com.caelum.ingresso.helper;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.stereotype.Component;
 
 import br.com.caelum.ingresso.auth.Token;
@@ -17,5 +20,10 @@ public class TokenHelper {
 
 		this.tokenDao.save(token);
 		return token;
+	}
+
+	public Optional<Token> getTokenFrom(String uuid) {
+		return Optional.of(this.tokenDao.findByUuid(uuid)
+				.orElseThrow(() -> new NotFoundException("Not Found")));
 	}
 }
